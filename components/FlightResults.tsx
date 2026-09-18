@@ -22,6 +22,15 @@ function formatHeaderDate(iso: string): string {
   }).format(new Date(iso.slice(0, 10)));
 }
 
+function formatRowDate(iso: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+  }).format(new Date(iso.slice(0, 10)));
+}
+
+const dateOnly = (iso: string) => iso.slice(0, 10);
+
 interface FlightResultsProps {
   flights: Flight[];
 }
@@ -42,6 +51,9 @@ export default function FlightResults({ flights }: FlightResultsProps) {
   const isSingleDestination = flights.every(
     (flight) => flight.toCode === first.toCode,
   );
+  const isSingleDate = flights.every(
+    (flight) => dateOnly(flight.departsAt) === dateOnly(first.departsAt),
+  );
 
   return (
     <section className="flex flex-col gap-3">
@@ -57,8 +69,8 @@ export default function FlightResults({ flights }: FlightResultsProps) {
           )}
         </h2>
         <span className="text-sm text-gray-500">
-          {flights.length} {flights.length === 1 ? "flight" : "flights"} ·{" "}
-          {formatHeaderDate(first.departsAt)}
+          {flights.length} {flights.length === 1 ? "flight" : "flights"}
+          {isSingleDate && <> · {formatHeaderDate(first.departsAt)}</>}
         </span>
       </div>
 
@@ -74,6 +86,11 @@ export default function FlightResults({ flights }: FlightResultsProps) {
                   {time(flight.departsAt)}
                 </div>
                 <div className="text-xs text-gray-400">{flight.fromCode}</div>
+                {!isSingleDate && (
+                  <div className="text-xs text-gray-400">
+                    {formatRowDate(flight.departsAt)}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col items-center text-gray-400">
                 <span>→</span>

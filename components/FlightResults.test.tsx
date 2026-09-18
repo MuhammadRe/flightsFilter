@@ -48,4 +48,18 @@ describe("FlightResults", () => {
     expect(screen.getByText("Malaga")).toBeInTheDocument();
     expect(screen.getByText("Barcelona")).toBeInTheDocument();
   });
+
+  test("omits the header date and shows per-flight dates when results span multiple dates", () => {
+    const laterFlight: Flight = {
+      ...flight,
+      id: "AMSAGP2",
+      departsAt: "2022-11-12T06:25:00",
+      arrivesAt: "2022-11-12T09:35:00",
+    };
+    render(<FlightResults flights={[flight, laterFlight]} />);
+    expect(screen.getByText(/2 flights/)).toBeInTheDocument();
+    expect(screen.queryByText(/10 Nov 2022/)).not.toBeInTheDocument();
+    expect(screen.getByText("10 Nov")).toBeInTheDocument();
+    expect(screen.getByText("12 Nov")).toBeInTheDocument();
+  });
 });
