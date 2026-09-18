@@ -39,12 +39,22 @@ export default function FlightResults({ flights }: FlightResultsProps) {
   }
 
   const first = flights[0];
+  const isSingleDestination = flights.every(
+    (flight) => flight.toCode === first.toCode,
+  );
 
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between">
         <h2 className="font-medium text-gray-900">
-          {first.from} <span className="text-gray-400">→</span> {first.to}
+          {isSingleDestination ? (
+            <>
+              {first.from} <span className="text-gray-400">→</span>{" "}
+              {first.to}
+            </>
+          ) : (
+            <>Flights from {first.from}</>
+          )}
         </h2>
         <span className="text-sm text-gray-500">
           {flights.length} {flights.length === 1 ? "flight" : "flights"} ·{" "}
@@ -79,6 +89,11 @@ export default function FlightResults({ flights }: FlightResultsProps) {
               </div>
             </div>
             <div className="text-right">
+              {!isSingleDestination && (
+                <div className="text-sm font-medium text-gray-900">
+                  {flight.to}
+                </div>
+              )}
               <div className="text-lg font-medium text-gray-900">
                 {formatPrice(flight.price, flight.currency)}
               </div>
